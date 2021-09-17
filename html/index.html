@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Local Network</title>
+    <script src="https://cdn.plot.ly/plotly-1.37.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <h1>Streaming!</h1>
+    <p>current: </p> <p id = 'live-signal'></p>
+    <div class=wrapper>
+      <div id="chart"></div>
+        <script>
+          var signal = 0
+          setInterval(function(){
+            fetch('{{ url_for('live_signal') }}').then(function(x) {
+                return x.json();
+            }).then(function(data) {
+                document.getElementById('live-signal').innerHTML = data['final_signal'];
+                signal = data['final_signal']
+            });
+          }, 1000);
+
+          Plotly.plot('chart',[{
+              y:[[signal]],
+              type:'line'
+          }]);
+          var cnt=0;
+  
+          setInterval(function(){
+              Plotly.extendTraces('chart',{y:[[signal]]},[0]);
+              cnt++;
+              if(cnt>50){
+                  Plotly.relayout('chart',{xaxis:{range:[cnt-50,cnt]}});
+              }  
+          },1000);
+          
+    
+        </script>
+    </div>
+    
+  </body>
+</html>
+
+
+

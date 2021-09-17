@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Local Network</title>
+    <script src="https://cdn.plot.ly/plotly-1.37.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body style="background-color:#594F4F;">
+    <h1 style="color:#E5FCC2; text-align: center;"> Welcome to Luggage Tracking Device </h1>
+    <h2 style="color:#9DE0AD; text-align: center;">Current Time Stamp</h2>
+    <h2 id ='tim' style="color:#9DE0AD; text-align: center;">NaN</h2>
+    <h2 style="color:#9DE0AD; text-align: center;">Location</h2>
+    <table style="background-color:#547980; Width:60%; color:#9DE0AD; border:1px solid black;margin-left:auto;margin-right:auto;">
+  <tr>
+    <th>Latitude</th>
+    <th>Longitude</th>
+    <th>Altitude</th>
+  </tr>
+  <tr>
+    <td><p id = 'live-signal'>NaN</p></td>
+    <td><p id = 'lat'>NaN</p></td>
+    <td><p id = 'alt'>NaN</p></td>
+  </tr>
+</table>
+<p></p>
+<div id='parent_div_1' class=wrapper>
+      <div class='child_div_1' id="chart" style="Width:49%; float: left;">
+        <script>
+          var signal = 0
+          setInterval(function(){
+            fetch('{{ url_for('live_signal') }}').then(function(x) {
+                return x.json();
+            }).then(function(data) {
+                document.getElementById('live-signal').innerHTML = data['final_signal'];
+                signal = data['final_signal']
+            });
+          }, 1000);
+
+          Plotly.plot('chart',[{
+              y:[[signal]],
+              type:'line'
+          }]);
+          var cnt=0;
+  
+          setInterval(function(){
+              Plotly.extendTraces('chart',{y:[[signal]]},[0]);
+              cnt++;
+              if(cnt>50){
+                  Plotly.relayout('chart',{xaxis:{range:[cnt-50,cnt]}});
+              }  
+          },1000);
+        </script>
+        <h2 style="text-align : center; color:#9DE0AD;">Temperature</h2>
+    </div>
+    <div class='child_div_2' id = 'chart2' style="Width:49%; float: right;">
+       <script>
+          var signal2 = 0
+          setInterval(function(){
+            fetch('{{ url_for('live_signal2') }}').then(function(x) {
+                return x.json();
+            }).then(function(data) {
+                document.getElementById('live-signal2').innerHTML = data['final_signal2'];
+                signal2 = data['final_signal2']
+            });
+          }, 1000);
+
+          Plotly.plot('chart2',[{
+              y:[[signal2]],
+              type:'line'
+          }]);
+          var cnt=0;
+  
+          setInterval(function(){
+              Plotly.extendTraces('chart2',{y:[[signal2]]},[0]);
+              cnt++;
+              if(cnt>50){
+                  Plotly.relayout('chart2',{xaxis:{range:[cnt-50,cnt]}});
+              }  
+          },1000);
+        </script>
+    <h2 style="text-align: center; color:#9DE0AD; ">Humidity</h2>
+    </div>
+  </body>
+</html>
+
+
+
